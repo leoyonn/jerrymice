@@ -1,7 +1,7 @@
 /**
  * Return.java
  * [CopyRight]
- * @author leo [liuy@xiaomi.com]
+ * @author leo [leoyonn@gmail.com]
  * @date Sep 10, 2013 2:57:16 PM
  */
 package me.lyso.http.base;

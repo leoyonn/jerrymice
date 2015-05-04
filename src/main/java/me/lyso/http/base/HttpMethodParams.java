@@ -1,7 +1,7 @@
 /**
  * HttpMethodParams.java
  * [CopyRight]
- * @author leo [liuy@xiaomi.com]
+ * @author leo [leoyonn@gmail.com]
  * @date Sep 10, 2013 6:40:42 PM
  */
 package me.lyso.http.base;

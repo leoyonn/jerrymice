@@ -1,7 +1,7 @@
 /**
  * HttpMethodUtils.java
  * [CopyRight]
- * @author leo [liuy@xiaomi.com]
+ * @author leo [leoyonn@gmail.com]
  * @date Sep 10, 2013 6:49:41 PM
  */
 package me.lyso.http.utils;

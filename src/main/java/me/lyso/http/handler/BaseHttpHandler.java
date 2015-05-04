@@ -1,7 +1,7 @@
 /**
  * BaseHttpHandler.java
  * [CopyRight]
- * @author leo [liuy@xiaomi.com]
+ * @author leo [leoyonn@gmail.com]
  * @date Sep 9, 2013 5:48:46 PM
  */
 package me.lyso.http.handler;

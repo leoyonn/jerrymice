@@ -5,7 +5,7 @@
 
     <groupId>me.lyso</groupId>
     <artifactId>jerrymice</artifactId>
-    <version>2.4.2</version>
+    <version>1.0</version>
 
     <name>JerryMice</name>
     <description>Simpler and Easier to Use Than Tomcat</description>
@@ -154,13 +154,13 @@
         <repository>
             <id>archiva.internal</id>
             <name>Internal Release Repository</name>
-            <url>https://nexus.d.lyso.me/nexus/content/repositories/releases/
+            <url>http://nexus.d.lyso.me/nexus/content/repositories/releases/
             </url>
         </repository>
         <snapshotRepository>
             <id>archiva.snapshots</id>
             <name>Internal Snapshot Repository</name>
-            <url>https://nexus.d.lyso.me/nexus/content/repositories/snapshots/
+            <url>http://nexus.d.lyso.me/nexus/content/repositories/snapshots/
             </url>
         </snapshotRepository>
     </distributionManagement>

@@ -1,7 +1,7 @@
 /**
  * Path.java
  * [CopyRight]
- * @author leo [liuy@xiaomi.com]
+ * @author leo [leoyonn@gmail.com]
  * @date Sep 9, 2013 2:10:38 PM
  */
 
