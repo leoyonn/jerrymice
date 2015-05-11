@@ -18,7 +18,6 @@ import me.lyso.http.utils.HttpMethodUtils;
  * Router rule to define a url path and check if another url matches this rule.
  *
  * @author leo [leoyonn@gmail.com]
- * @author leo
  */
 public class RouterRule {
     private static final Pattern DYNAMIC = Pattern.compile("^\\{(<.+>)?(.+)\\}$");
@@ -88,7 +87,7 @@ public class RouterRule {
     /**
      * A part of a url Path(split by '/').
      *
-     * @author leo
+     * @author leo [leoyonn@gmail.com]
      */
     private static interface PathPart {
     }
@@ -96,7 +95,7 @@ public class RouterRule {
     /**
      * A static part of a url Path.
      *
-     * @author leo
+     * @author leo [leoyonn@gmail.com]
      */
     private static class StaticPart implements PathPart {
         private final String name;
@@ -114,7 +113,7 @@ public class RouterRule {
     /**
      * A dynamic part of a url Path.
      *
-     * @author leo
+     * @author leo [leoyonn@gmail.com]
      */
     private static class DynamicPart implements PathPart {
         private final String name;

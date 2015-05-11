@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A model(data map) for dumping variables into request for web page.
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class Model {
     Map<String, Object> map = new HashMap<String, Object>();

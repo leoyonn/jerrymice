@@ -6,16 +6,20 @@
  */
 package me.lyso.http.demo;
 
+import com.google.gson.Gson;
 import me.lyso.http.annotation.*;
 import me.lyso.http.base.Model;
 import me.lyso.http.base.Return;
 import me.lyso.http.base.Return.Type;
+import me.lyso.http.demo.DemoFilters.CookieCheckFilter;
+import me.lyso.http.demo.DemoFilters.LogFilter;
 import me.lyso.http.handler.BaseHttpHandler;
 import me.lyso.http.handler.Context;
 import me.lyso.http.server.HttpServer;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,14 +30,14 @@ import java.util.Date;
 /**
  * Typical using of jerrymice.
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
-@Path("/demo")
+@Path(value = "/demo", filters = LogFilter.class)
 @WebServlet(asyncSupported = true)
 public class JerryMiceDemo extends BaseHttpHandler {
     private static final long serialVersionUID = 1L;
 
-    @Get("/hello/{name}")
+    @Get(value = "/hello/{name}")
     public Return hello(@Param("name") String name) {
         return Return.build(Type.Plain, "Hello, your name in url is: " + name);
     }
@@ -48,9 +52,25 @@ public class JerryMiceDemo extends BaseHttpHandler {
         return String.format("Hello, got your [%d] and any string [%s]", id, any);
     }
 
+    static class AnyObject {
+        public String name;
+        public long value;
+        public transient String desc;
+
+        @Override
+        public String toString() {
+            return new Gson().toJson(this);
+        }
+    }
+
+    @Get("hellojson")
+    public String helloJson(@Param(value = "json", json = true) AnyObject any) {
+        return "Hello, your json data in query string is: " + any;
+    }
+
     @Get("/")
     public Return index() {
-        return Return.build(Type.WebPage, "/webroot/index.html");
+        return Return.build(Type.WebPage, "/webroot/index.jsp");
     }
 
     @Get(value = "/jsp")
@@ -118,6 +138,34 @@ public class JerryMiceDemo extends BaseHttpHandler {
         }
         return "<html><body><h1>Content of file [" + partFile.getSubmittedFileName() + "]</h1><p>"
                 + result.toString().replaceAll("\n", "<br>") + "</p></body></html>";
+    }
+
+    // ============================================= filter related ===================================================
+    @Get(value = "/filter/fakelogin")
+    public Return fakeLogin(Context context, Model model, @Param("user") String user, @Param("pass") String pass) {
+        String fakeToken = "token-" + user + ":" + pass;
+        context.response().addCookie(new Cookie(CookieCheckFilter.CheckName, fakeToken));
+        model.add("info", "Ok, fake login done, got token:" + fakeToken);
+        return Return.build(Type.WebPage, "/demo");
+    }
+
+    @Get(value = "/filter/fakelogout")
+    public Return fakeLogout(Context context, Model model) {
+        context.response().addCookie(new Cookie(CookieCheckFilter.CheckName, null));
+        model.add("info", "Ok, fake logout done!");
+        return Return.build(Type.WebPage, "/demo");
+    }
+
+    @Get(value = "/filter/auth", filters = CookieCheckFilter.class, overrideFilters = false)
+    public Return authFilter(Context context, Model model) {
+        model.add("info", "Ok, You got here, which means you have loginned! Your token: "
+                + context.request().getAttribute("token") + "; logged: " + context.request().getAttribute("logged"));
+        return Return.build(Type.WebPage, "/demo");
+    }
+
+    @Get(value = "/filter/auth-dont-log", filters = CookieCheckFilter.class, overrideFilters = true)
+    public Return authFilterDontLog(Context context, Model model) {
+        return authFilter(context, model);
     }
 
     public static void main(String[] args) throws Exception {

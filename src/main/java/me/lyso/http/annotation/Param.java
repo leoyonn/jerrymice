@@ -7,6 +7,9 @@ package me.lyso.http.annotation;
 
 import java.lang.annotation.*;
 
+/**
+ * @author leo
+ */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Param {
@@ -16,4 +19,11 @@ public @interface Param {
      * @return
      */
     String value();
+
+    /**
+     * Whether this parameter is json formatted.
+     *
+     * @return
+     */
+    boolean json() default false;
 }

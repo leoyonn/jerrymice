@@ -27,7 +27,7 @@ import java.util.Map;
  * new HttpServer(port).addHandler(YourHandler1.class).addHandler(YourHandler2.class).start();
  * </code>
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class HttpServer {
     protected static final Logger LOGGER = LoggerFactory.getLogger(HttpServer.class);

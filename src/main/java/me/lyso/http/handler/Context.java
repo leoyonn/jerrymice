@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static me.lyso.http.handler.Context.Status.*;
 
 /**
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public final class Context {
     private static final Logger logger = LoggerFactory.getLogger(Context.class);
@@ -95,7 +95,8 @@ public final class Context {
             return this;
         }
 
-        response.sendError(504, reason);
+        int code = response.getStatus();
+        response.sendError(code < 400 ? 504 : code, reason);
         async.complete();
         return this;
     }

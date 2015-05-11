@@ -11,15 +11,21 @@ import me.lyso.http.handler.Context;
 /**
  * An http method parameter description.
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class MethodParam {
     private final String name;
     private final Class<?> clz;
+    private final boolean json;
 
     public MethodParam(String name, Class<?> clz) {
+        this(name, clz, false);
+    }
+
+    public MethodParam(String name, Class<?> clz, boolean json) {
         this.name = name;
         this.clz = clz;
+        this.json = json;
     }
 
     public String name() {
@@ -30,15 +36,19 @@ public class MethodParam {
         return clz;
     }
 
+    public boolean json() {
+        return json;
+    }
+
     @Override
     public String toString() {
-        return "<name:" + name + ", clz:" + clz + ">";
+        return "<name:" + name + ", clz:" + clz + ", json:" + json + ">";
     }
 
     /**
      * A method can have only 1 parameter of type {@link Model}.
      *
-     * @author leo
+     * @author leo [leoyonn@gmail.com]
      */
     public static class ModelParam extends MethodParam {
         private ModelParam() {
@@ -51,7 +61,7 @@ public class MethodParam {
     /**
      * A method can have only 1 parameter of type {@link Context}.
      *
-     * @author leo
+     * @author leo [leoyonn@gmail.com]
      */
     public static class ContextParam extends MethodParam {
         private ContextParam() {

@@ -24,10 +24,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Extends this and mark <code>@Path(path)</code>, root path not supporting "/" or "".
@@ -35,7 +34,7 @@ import java.util.Map;
  * Handler's @Path should be not empty("/" or ""), and not same with others in one HttpServer.
  * </b>
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 @WebServlet(asyncSupported = true)
 public abstract class BaseHttpHandler extends HttpServlet {
@@ -61,10 +60,10 @@ public abstract class BaseHttpHandler extends HttpServlet {
             throw new IllegalArgumentException("invalid class [" + clz + "]: should add @Path annotation!");
         }
         this.path = HttpMethodUtils.removeHeadAndTailSlash(path.value());
-        parseHttpMethodParams(clz);
+        parseHttpMethodParams(clz, HttpMethodUtils.initFilters(path.filters()));
     }
 
-    private void parseHttpMethodParams(Class<?> clz) {
+    private void parseHttpMethodParams(Class<?> clz, Filter[] filters) {
         LOGGER.info("^#Blue.init: parse http methods and args of {}, {}.", clz.getCanonicalName(), path);
         for (Method m : clz.getDeclaredMethods()) {
             Annotation a = HttpMethodUtils.getHttpMethodAnnotation(m);
@@ -75,16 +74,43 @@ public abstract class BaseHttpHandler extends HttpServlet {
 
             List<MethodParam> params = HttpMethodUtils.parseParamTypes(m);
             if (a instanceof Get) {
-                HttpMethodParams margs = new HttpMethodParams(m, params, "get", new RouterRule(((Get) a).value()), ((Get) a).timeout());
+                Get geta = (Get) a;
+                filters = mergeFilters(geta.overrideFilters(), filters, HttpMethodUtils.initFilters(geta.filters()));
+                HttpMethodParams margs = new HttpMethodParams(m, params, "get", new RouterRule(geta.value()), geta.timeout(), filters);
                 getMethods.add(margs);
                 LOGGER.info("^#Blue.parse-http-methods-args: GET-method {}(): {}.", m.getName(), margs);
             } else if (a instanceof Post) {
-                HttpMethodParams margs = new HttpMethodParams(m, params, "post", new RouterRule(((Post) a).value()), ((Post) a).timeout());
+                Post posta = (Post) a;
+                filters = mergeFilters(posta.overrideFilters(), filters, HttpMethodUtils.initFilters(posta.filters()));
+                HttpMethodParams margs = new HttpMethodParams(m, params, "post", new RouterRule(posta.value()), posta.timeout(), filters);
                 postMethods.add(margs);
                 LOGGER.info("^#Blue.parse-http-methods-args: POST-method {}(): {}.", m.getName(), margs);
             } else {
                 throw new IllegalArgumentException("unknown method");
             }
+        }
+    }
+
+    /**
+     * Merge global filters and mine filters.
+     *
+     * @param override
+     * @param global
+     * @param mine
+     * @return
+     * @see Get#overrideFilters
+     * @see Post#overrideFilters
+     */
+    private Filter[] mergeFilters(boolean override, Filter[] global, Filter[] mine) {
+        if (override || global.length == 0) {
+            return mine;
+        } else if (mine.length == 0) {
+            return global;
+        } else {
+            Filter[] filters = new Filter[global.length + mine.length];
+            System.arraycopy(global, 0, filters, 0, global.length);
+            System.arraycopy(mine, 0, filters, global.length, mine.length);
+            return filters;
         }
     }
 
@@ -132,7 +158,7 @@ public abstract class BaseHttpHandler extends HttpServlet {
     }
 
     /**
-     * Find which htt-method should process this query, and merge queryParams and urlParams and then invoke that method.
+     * Find which http-method should process this query, and merge queryParams and urlParams and then invoke that method.
      *
      * @param context
      * @param url
@@ -166,7 +192,22 @@ public abstract class BaseHttpHandler extends HttpServlet {
             }
         }
         Object[] args = HttpMethodUtils.getParamValues(context, urlParams, methodArgs.params());
-        return call(url, methodArgs, args);
+
+        Filter[] filters = methodArgs.filters();
+        if (filters.length == 0) {
+            return call(url, methodArgs, args);
+        }
+        Return ret = null;
+        for (Filter filter : filters) {
+            if ((ret = filter.pre(context, args)) != null) {
+                return ret;
+            }
+        }
+        ret = call(url, methodArgs, args);
+        for (int i = filters.length - 1; i >= 0; i--) {
+            filters[i].post(context);
+        }
+        return ret;
     }
 
     /**

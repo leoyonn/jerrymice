@@ -7,14 +7,12 @@
 
 package me.lyso.http.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import me.lyso.http.base.Filter;
+
+import java.lang.annotation.*;
 
 /**
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 @Target({
         ElementType.TYPE
@@ -28,4 +26,11 @@ public @interface Path {
      * @return
      */
     String value();
+
+    /**
+     * Filter list on this path.
+     *
+     * @return
+     */
+    Class<? extends Filter>[] filters() default {};
 }

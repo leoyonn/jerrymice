@@ -10,7 +10,7 @@ import me.lyso.http.demo.JerryMiceDemo;
 import org.junit.Test;
 
 /**
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class HttpServerTest {
     @Test

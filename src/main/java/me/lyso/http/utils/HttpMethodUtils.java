@@ -17,6 +17,7 @@ import java.util.Set;
 import me.lyso.http.annotation.Get;
 import me.lyso.http.annotation.Param;
 import me.lyso.http.annotation.Post;
+import me.lyso.http.base.Filter;
 import me.lyso.http.handler.Context;
 import me.lyso.http.base.MethodParam;
 import me.lyso.http.base.MethodParam.ContextParam;
@@ -26,7 +27,7 @@ import me.lyso.http.base.Model;
 /**
  * Utilities for Http method and parameter parsing.
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class HttpMethodUtils {
     public static final Set<Class<?>> SUPPORTED_HTTP_METHODS = new HashSet<Class<?>>() {
@@ -89,7 +90,7 @@ public class HttpMethodUtils {
                 if (param == null) {
                     throw new IllegalArgumentException("Missing param annotation in method " + m);
                 }
-                result.add(new MethodParam(param.value(), paramTypes[i]));
+                result.add(new MethodParam(param.value(), paramTypes[i], param.json()));
             }
         }
         return result;
@@ -111,10 +112,30 @@ public class HttpMethodUtils {
             } else if (param == ContextParam.Instance) {
                 result.add(context);
             } else {
-                result.add(Converters.convert(param.clz(), map.get(param.name())));
+                result.add(Converters.convert(param.json(), param.clz(), map.get(param.name())));
             }
         }
         return result.toArray();
+    }
+
+    /**
+     * @param classes
+     * @return
+     * @throws IllegalStateException
+     */
+    public static Filter[] initFilters(Class<? extends Filter>[] classes) throws IllegalStateException {
+        if (classes == null || classes.length == 0) {
+            return Filter.Empty;
+        }
+        Filter[] filters = new Filter[classes.length];
+        for (int i = 0; i < filters.length; i++) {
+            try {
+                filters[i] = classes[i].newInstance();
+            } catch (Exception ex) {    // IllegalAccessException, InstantiationException
+                throw new IllegalStateException("Initialize filter got exception", ex);
+            }
+        }
+        return filters;
     }
 
     /**

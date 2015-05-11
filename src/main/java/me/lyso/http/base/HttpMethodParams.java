@@ -10,13 +10,14 @@ import me.lyso.http.base.MethodParam.ContextParam;
 import me.lyso.http.base.MethodParam.ModelParam;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 /**
  * An http method with parameters and {@link RouterRule}s.
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class HttpMethodParams {
     private final Method method;
@@ -26,8 +27,9 @@ public class HttpMethodParams {
     private final String httpType;
     private final RouterRule rule;
     private final long timeout;
+    private final Filter[] filters;
 
-    public HttpMethodParams(Method method, List<MethodParam> params, String httpType, RouterRule rule, long timeout) {
+    public HttpMethodParams(Method method, List<MethodParam> params, String httpType, RouterRule rule, long timeout, Filter[] filters) {
         this.method = method;
         this.params = params;
         this.httpType = httpType;
@@ -45,6 +47,7 @@ public class HttpMethodParams {
         this.modelParamIndex = midx;
         this.contextParamIndex = cidx;
         this.timeout = timeout;
+        this.filters = filters;
     }
 
     public Map<String, String> checkRule(String url) {
@@ -85,6 +88,10 @@ public class HttpMethodParams {
 
     public long timeout() {
         return timeout;
+    }
+
+    public Filter[] filters() {
+        return filters;
     }
 
     @Override

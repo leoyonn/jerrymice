@@ -15,7 +15,7 @@ import javax.servlet.ServletException;
 /**
  * Defines return type and value with {@link Model} of an http-request.
  *
- * @author leo
+ * @author leo [leoyonn@gmail.com]
  */
 public class Return {
     private final Type type;
@@ -135,7 +135,7 @@ public class Return {
     /**
      * Return type.
      *
-     * @author leo
+     * @author leo [leoyonn@gmail.com]
      */
     public static enum Type {
         Text("text/plain"),
